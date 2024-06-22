@@ -1,0 +1,30 @@
+{
+    "files.autoSave": "afterDelay",
+    "editor.fontLigatures": true,
+    "editor.fontFamily": "'Fira Coda','Monaspace Neon', monospace",
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "files.exclude": {
+        "**/__pycache__": true
+    },
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": false,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "linting.pylintEnabled": true,
+        "linting.pylintArgs": [
+            "--enable=W0614"
+        ],
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.unusedImports": "explicit",
+        }
+    }
+}

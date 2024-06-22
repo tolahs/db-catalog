@@ -1,0 +1,9 @@
+{
+    "files.autoSave": "afterDelay",
+    //"editor.fontFamily": "'Monaspace Neon', monospace , Consolas, 'Courier New', 'CommitMono'",  
+    //"editor.fontFamily": "Consolas",
+    //"editor.fontFamily": "'CommitMono'",
+    //"editor.fontFamily": "'Monaspace Neon', monospace",  
+    "editor.fontFamily": "'Fira Code'",
+    "editor.fontLigatures": true,
+}

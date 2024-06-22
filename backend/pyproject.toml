@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["tolga.ahiskalioglu <tolga.ahiskalioglu.param.com.tr>"]
+packages = [{include = "backend"}]
+readme = "README.md"
+
+[tool.autoflake]
+check = true
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+sqlalchemy = "^2.0.31"
+databases = "^0.9.0"
+graphql-core = "^3.2.3"
+uvicorn = "^0.30.1"
+ariadne = "^0.23.0"
+asyncpg = "^0.29.0"
+strawberry-graphql = "^0.235.0"
+autoflake = "^2.3.1"
+pytest = "^8.2.2"
+pytest-asyncio = "^0.23.7"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
