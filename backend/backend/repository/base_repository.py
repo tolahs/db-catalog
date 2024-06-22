@@ -6,10 +6,9 @@ from uuid import uuid4
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import select
 from sqlalchemy import update as sql_update
-from sqlalchemy.dialects.postgresql import UUID 
 from sqlalchemy.orm import Mapped, mapped_column
 
-from ..config import Base, DatabaseSession
+from ..config import Base, db
 
 
 class BaseModel(Base):
@@ -26,8 +25,7 @@ class BaseModel(Base):
 
 class BaseRepository(ABC):
 
-    def __init__(self, db: DatabaseSession, entity: object):
-        self.db = db
+    def __init__(self, entity: object):        
         self.entity: Any = entity
 
     @staticmethod
@@ -113,7 +111,7 @@ class BaseRepository(ABC):
 class BasicRepository(BaseRepository):
 
     async def get_one_by_id(self, id: str) -> Optional[object]:
-        async with self.db as session:
+        async with db as session:
             stmt = select(self.entity).where(
                 self.entity.id == id, self.entity.deleted_at.is_(None)
             )
@@ -124,7 +122,7 @@ class BasicRepository(BaseRepository):
     async def find_one_by(
         self, filter: dict, query_options: Optional[dict] = None
     ) -> Optional[object]:
-        async with self.db.session as session:
+        async with db.session as session:
             stmt = (
                 select(self.entity)
                 .filter_by(**filter)
@@ -140,7 +138,7 @@ class BasicRepository(BaseRepository):
     async def find_all_by(
         self, filter: dict, query_options: Optional[dict] = None
     ) -> List[object]:
-        async with self.db.session as session:
+        async with db.session as session:
             stmt = (
                 select(self.entity)
                 .filter_by(**filter)
@@ -154,7 +152,7 @@ class BasicRepository(BaseRepository):
             return list(result.scalars().all())
 
     async def find_all(self, query_options: Optional[dict] = None) -> List[object]:
-        async with self.db.session as session:
+        async with db.session as session:
             stmt = select(self.entity).where(self.entity.deleted_at.is_(None))  # type: ignore
 
             if query_options and "order_by" in query_options:
@@ -165,7 +163,7 @@ class BasicRepository(BaseRepository):
     async def create_one(
         self, entity: Any, query_options: Optional[dict] = None
     ) -> Any:
-        async with self.db as session:
+        async with db as session:
             async with session.begin():
                 entity = self.set_default_for_create(entity)
                 session.add(entity)
@@ -176,19 +174,19 @@ class BasicRepository(BaseRepository):
     async def create_many(
         self, entities: List[Any], query_options: Optional[dict] = None
     ) -> List[Any]:
-        async with self.db.session as session:
+        async with db.session as session:
             async with session.begin():
                 for entity in entities:
                     entity = self.set_default_for_create(entity)
 
                 session.add_all(entities)
-            await session.commit()            
+            await session.commit()
             return entities
 
     async def update_one(
         self, id: str, data: dict, query_options: Optional[dict] = None
     ) -> object:
-        async with self.db.session as session:
+        async with db.session as session:
             stmt = select(self.entity).where(
                 self.entity.id == id, self.entity.deleted_at.is_(None)
             )  # type: ignore
@@ -206,7 +204,7 @@ class BasicRepository(BaseRepository):
             return entity
 
     async def delete_one(self, id: str, query_options: Optional[dict] = None) -> int:
-        async with self.db.session as session:
+        async with db.session as session:
             query = sql_delete(self.entity).where(  # type: ignore
                 self.entity.id == id, self.entity.deleted_at.is_(None)
             )  # type: ignore
@@ -217,7 +215,7 @@ class BasicRepository(BaseRepository):
     async def delete_many(
         self, ids: List[str], query_options: Optional[dict] = None
     ) -> int:
-        async with self.db.session as session:
+        async with db.session as session:
             query = sql_delete(self.entity).where(  # type: ignore
                 self.entity.id.in_(ids), self.entity.deleted_at.is_(None)
             )  # type: ignore
@@ -228,10 +226,14 @@ class BasicRepository(BaseRepository):
     async def soft_delete_one(
         self, id: str, query_options: Optional[dict] = None
     ) -> int:
-        async with self.db.session as session:
-            query = sql_update(self.entity).where(  # type: ignore
-                self.entity.id == id, self.entity.deleted_at.is_(None)
-            ).values(deleted_at=datetime.now(), deleted_by="admin")  # type: ignore
+        async with db.session as session:
+            query = (
+                sql_update(self.entity)
+                .where(  # type: ignore
+                    self.entity.id == id, self.entity.deleted_at.is_(None)
+                )
+                .values(deleted_at=datetime.now(), deleted_by="admin")
+            )  # type: ignore
             result = await session.execute(query)
             await session.commit()
             return result.rowcount
@@ -239,10 +241,14 @@ class BasicRepository(BaseRepository):
     async def soft_delete_many(
         self, ids: List[str], query_options: Optional[dict] = None
     ) -> int:
-        async with self.db.session as session:
-            query = sql_update(self.entity).where(  # type: ignore
-                self.entity.id.in_(ids), self.entity.deleted_at.is_(None)
-            ).values(deleted_at=datetime.now(), deleted_by="admin")  # type: ignore
+        async with db.session as session:
+            query = (
+                sql_update(self.entity)
+                .where(  # type: ignore
+                    self.entity.id.in_(ids), self.entity.deleted_at.is_(None)
+                )
+                .values(deleted_at=datetime.now(), deleted_by="admin")
+            )  # type: ignore
             result = await session.execute(query)
             await session.commit()
             return result.rowcount

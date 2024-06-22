@@ -1,5 +1,5 @@
 from typing import Any, AsyncGenerator
-
+from backend.config import db
 import pytest
 
 from backend.config import DatabaseSession
@@ -120,13 +120,17 @@ def create_mock_data():
 
 
 
+@pytest.fixture(scope="session", autouse=True)
+async def db():
+    print("Creating tables and db")
+    await db.create_all()
+
 @pytest.fixture()
 async def project_repo():
-    db: DatabaseSession = DatabaseSession("postgresql+asyncpg://postgres:postgres@db-server/postgres")
+    # db: DatabaseSession = DatabaseSession("postgresql+asyncpg://postgres:postgres@db-server/db_test")
     test_projects = create_mock_data()
-    repo = ProjectRepository(db, entity=Project)
+    repo = ProjectRepository(entity=Project)
     try:
-        await db.create_all()
         for project in test_projects:
             x = await repo.create_one(project)
             pk_list.append(x.id)

@@ -2,11 +2,6 @@ from fastapi import FastAPI
 from backend.config import DatabaseSession
 from contextlib import asynccontextmanager
 
-from strawberry.fastapi import GraphQLRouter
-import strawberry
-
-
-
 def init_app() -> FastAPI:
     db = DatabaseSession()
 
@@ -29,10 +24,6 @@ def init_app() -> FastAPI:
     def read_root():
         return "Welocome to Db Catalog Backend Server"
 
-    # add graphql endpoint
-    schema = strawberry.Schema(query=Query, mutation=Mutation)
-    graphql_app = GraphQLRouter(schema)
-    app.include_router(graphql_app, prefix="/graphql")
 
     return app
 

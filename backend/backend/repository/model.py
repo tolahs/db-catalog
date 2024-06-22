@@ -1,19 +1,17 @@
-from typing import Any, List, Optional
+from typing import Any, Optional
 
 from sqlalchemy import ForeignKey, Text
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from .model_column import ModelColumn
+from sqlalchemy.orm import Mapped, mapped_column
+
 from backend.repository.base_repository import BasicRepository
 
-from .project import Project
 
+class Model(BaseModel):  # type: ignore
 
-class Model(SQLModel, table=True):  # type: ignore
-    
     __tablename__ = "model"  # type: ignore
 
     # Reference to project.id
-    project_id: Mapped[str] = mapped_column(ForeignKey(f"{Project.__tablename__}.id"))
+    project_id: Mapped[str] = mapped_column(ForeignKey("project.id"))
 
     # Model name displayed in UI
     display_name: Mapped[str] = mapped_column(nullable=False)
@@ -34,9 +32,7 @@ class Model(SQLModel, table=True):  # type: ignore
     refresh_time: Mapped[Optional[str]]
 
     # Model properties, a json string, the description and displayName should be stored here
-    properties: Mapped[Optional[dict[str, Any]]] 
+    properties: Mapped[Optional[dict[str, Any]]]
 
-    Columns: Mapped[List[ModelColumn]] = relationship(back_populates=f"{ModelColumn.__tablename__}_parent_{__tablename__}")
 
-class ModelRepository(BasicRepository):
-    ...
+class ModelRepository(BasicRepository): ...
