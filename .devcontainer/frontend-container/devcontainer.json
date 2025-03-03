@@ -7,7 +7,7 @@
     "shutdownAction": "none",
     "workspaceFolder": "/workspace/frontend",
     "features": {
-        "ghcr.io/meaningful-ooo/devcontainer-features/fish:1": {},
+        "ghcr.io/meaningful-ooo/devcontainer-features/fish:2": {},
         "ghcr.io/jckimble/devcontainer-features/ngrok:3": {}
     }
     // Features to add to the dev container. More info: https://containers.dev/features.
